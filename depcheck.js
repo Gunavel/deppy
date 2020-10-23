@@ -10,6 +10,8 @@
   Known Issues:
   - running depcheck as spawn cmd in win32 systems seems to fail
 */
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 const depcheck = require("depcheck");
 const ora = require("ora");
 
@@ -21,9 +23,6 @@ if (process.platform === "win32") {
   process.exit(1);
 }
 
-// dependency processor local module
-// const depsProcessor = require("./deps-processor");
-
 const spinner = ora("Collecting unused dependencies").start();
 
 try {
@@ -34,31 +33,39 @@ try {
 
   // Runs depcheck npm module with optional flags
   // see https://www.npmjs.com/package/depcheck for additional configs
-  depcheck(process.cwd(), options, (unused) => {
+  depcheck(process.cwd(), options, async (unused) => {
     spinner.succeed();
 
-    const deps = [...unused.dependencies, ...unused.devDependencies];
+    const deps = unused.dependencies;
     if (deps.length === 0) {
       console.log("\n🔥 No unused dependencies found in your project. 🚀\n");
       process.exit();
     }
 
-    console.log(
-      `Found ${
-        unused.dependencies.length
-      } unused dependencies. ${unused.dependencies.join(", ")}`
-    );
-    console.log("\n");
-    console.log(
-      `Found ${
-        unused.devDependencies.length
-      } unused devDependencies. ${unused.devDependencies.join(",")}`
-    );
+    console.log(`\nUnused Dependencies: ${unused.dependencies.length}`);
+    console.dir(unused.dependencies);
 
-    // Process the collected dependencies
-    // depsProcessor(deps);
+    console.log("\n");
+    spinner.start("Purging dependencies");
+    console.log("\n");
+
+    try {
+      const depsList = deps.join(" ");
+      await exec(`yarn remove ${depsList}`);
+      spinner.succeed(
+        "Dependencies purged successfully! Please build/run the application manually to verify."
+      );
+    } catch (error) {
+      spinner.fail("Failed to purge dependencies.");
+      console.log(
+        "Undo the package.json changes if any and run yarn install manually!"
+      );
+      console.log(error);
+    }
+
+    process.exit();
   });
-} catch (e) {
+} catch (error) {
   spinner.fail("Failed to run depcheck.\n");
 
   const currentNodeMajorVersion = Number(process.version.match(/^v(\d+\.)/)[1]);
@@ -67,6 +74,6 @@ try {
     console.log("Node version should be >=10 for depcheck to run.");
   }
 
-  console.log(e);
+  console.log(error);
   process.exit(1);
 }
