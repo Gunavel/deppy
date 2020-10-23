@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* eslint-disable no-console */
 /*
   Analyze installed dependencies using `depcheck` npm module.
