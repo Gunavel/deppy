@@ -1,7 +1,7 @@
 {
   "name": "deppy",
   "version": "1.0.0",
-  "description": "A module to cleanup dependencies",
+  "description": "A module to purge the unused dependencies from package.json",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Gunavel/deppy#readme",
   "dependencies": {
-    "depcheck": "^1.2.0"
+    "depcheck": "^1.2.0",
+    "ora": "^5.1.0"
   }
 }
