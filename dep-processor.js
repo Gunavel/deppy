@@ -2,8 +2,8 @@
 
 /*
   Analyze installed dependencies using `depcheck` npm module.
-  1. Runs `depcheck` to find unused dependencies/devDependencies
-  2. Array of unused dependencies are passed to `deps-processor.js` for purging safely
+  1. Runs `depcheck` to find unused dependencies
+  2. Array of unused dependencies are removed using `yarn remove dep1 dep2 ...`
 
   Usage: See readme for usage info.
 
@@ -16,10 +16,7 @@ const depcheck = require("depcheck");
 const ora = require("ora");
 
 if (process.platform === "win32") {
-  console.log("<".repeat(50));
-  console.error("\nWindows sucks!! Please run this on linux based OS.\n");
-  console.log(">".repeat(50));
-
+  console.log("\nWindows sucks!! Please run this on linux based OS.\n");
   process.exit(1);
 }
 
