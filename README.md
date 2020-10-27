@@ -19,6 +19,7 @@ npx https://github.com/Gunavel/deppy
 ## Note
 
 - Currently deppy removes the dependencies using `yarn remove` command
+- Checks if the build succeeds using `yarn build` command
 
 ## Caution
 
@@ -28,3 +29,8 @@ npx https://github.com/Gunavel/deppy
 ## Known Issues
 
 - Running depcheck as spawn cmd in win32 systems seems to fail
+
+## TODO
+
+- Add support for `npm` commands
+- Add support for passing in commands through cmd line args
