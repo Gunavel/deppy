@@ -20,6 +20,13 @@ if (process.platform === "win32") {
   process.exit(1);
 }
 
+/**
+ * Commands
+ */
+const uninstallDepCmd = (depsList) => `yarn remove ${depsList}`;
+const buildCmd = "yarn build";
+
+/** Processing indicator */
 const spinner = ora("Collecting unused dependencies").start();
 
 try {
@@ -28,8 +35,10 @@ try {
     ignoreDirs: ["dist", "build", "public", "_public"],
   };
 
-  // Runs depcheck npm module with optional flags
-  // see https://www.npmjs.com/package/depcheck for additional configs
+  /**
+   * Runs depcheck npm module with optional flags
+   * See https://www.npmjs.com/package/depcheck for additional configs
+   */
   depcheck(process.cwd(), options, async (unused) => {
     spinner.succeed();
 
@@ -47,10 +56,20 @@ try {
     console.log("\n");
 
     try {
+      /**
+       * Uninstall the dependencies
+       */
       const depsList = deps.join(" ");
-      await exec(`yarn remove ${depsList}`);
+      await exec(uninstallDepCmd(depsList));
+      spinner.succeed("Dependencies purged successfully!");
+
+      /**
+       * Run build command
+       */
+      spinner.start("Checking if build succeeds");
+      await exec(buildCmd);
       spinner.succeed(
-        "Dependencies purged successfully! Please build/run the application manually to verify."
+        "Build succeeded! Please build/run the application manually to verify."
       );
     } catch (error) {
       spinner.fail("Failed to purge dependencies.");
